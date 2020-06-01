@@ -1,0 +1,5 @@
+name: OKBomber
+version: ${project.version}
+api-version: 1.14
+main: com.darkender.plugins.okbomber.OkBomber
+author: Techdoodle
