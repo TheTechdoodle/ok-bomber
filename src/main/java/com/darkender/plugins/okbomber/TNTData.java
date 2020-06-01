@@ -9,15 +9,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-public class TNTData implements Cloneable, Serializable
+public class TNTData implements Cloneable
 {
-    private static final long serialVersionUID = -5200651817121602619L;
     private final Set<TNTAddon> tntAddons = new HashSet<>();
     
     public TNTData()
@@ -42,27 +37,19 @@ public class TNTData implements Cloneable, Serializable
         return tntAddons;
     }
     
-    public byte[] serialize() throws IOException
+    public String serialize()
     {
-        try(ByteArrayOutputStream bos = new ByteArrayOutputStream())
+        StringJoiner joiner = new StringJoiner(";");
+        for(TNTAddon addon : tntAddons)
         {
-            ObjectOutputStream out = new ObjectOutputStream(bos);
-            out.writeObject(this);
-            out.flush();
-            return bos.toByteArray();
+            joiner.add(addon.getKey());
         }
+        return joiner.toString();
     }
     
     public void apply(PersistentDataContainer persistentDataContainer)
     {
-        try
-        {
-            persistentDataContainer.set(OkBomber.tntDataKey, PersistentDataType.BYTE_ARRAY, serialize());
-        }
-        catch(IOException e)
-        {
-            e.printStackTrace();
-        }
+        persistentDataContainer.set(OkBomber.tntDataKey, PersistentDataType.STRING, serialize());
     }
     
     public void applyToItem(ItemStack base)
@@ -84,27 +71,31 @@ public class TNTData implements Cloneable, Serializable
         base.setItemMeta(meta);
     }
     
-    public static TNTData read(byte[] data) throws IOException, ClassNotFoundException
+    public static TNTData read(String data)
     {
-        ByteArrayInputStream bis = new ByteArrayInputStream(data);
-        try(ObjectInput in = new ObjectInputStream(bis))
+        TNTData tntData = new TNTData();
+        for(String key : data.split(";"))
         {
-            return (TNTData) in.readObject();
+            if(TNTAddon.has(key))
+            {
+                tntData.getTntAddons().add(TNTAddon.get(key));
+            }
         }
+        return tntData;
     }
     
-    public static TNTData read(PersistentDataContainer persistentDataContainer) throws IOException, ClassNotFoundException, IllegalArgumentException
+    public static TNTData read(PersistentDataContainer persistentDataContainer)
     {
-        if(!persistentDataContainer.has(OkBomber.tntDataKey, PersistentDataType.BYTE_ARRAY))
+        if(!persistentDataContainer.has(OkBomber.tntDataKey, PersistentDataType.STRING))
         {
             throw new IllegalArgumentException();
         }
-        return read(persistentDataContainer.get(OkBomber.tntDataKey, PersistentDataType.BYTE_ARRAY));
+        return read(persistentDataContainer.get(OkBomber.tntDataKey, PersistentDataType.STRING));
     }
     
     public static boolean hasData(ItemStack item)
     {
         return item.hasItemMeta() && item.getItemMeta().getPersistentDataContainer()
-                .has(OkBomber.tntDataKey, PersistentDataType.BYTE_ARRAY);
+                .has(OkBomber.tntDataKey, PersistentDataType.STRING);
     }
 }

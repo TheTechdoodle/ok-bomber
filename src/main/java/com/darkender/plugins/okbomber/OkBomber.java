@@ -22,7 +22,6 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -94,15 +93,9 @@ public class OkBomber extends JavaPlugin implements Listener
     {
         if(persistentBlockMetadataAPI.has(event.getBlock(), PersistentDataType.TAG_CONTAINER))
         {
-            try
-            {
-                preSpawn.put(event.getBlock().getLocation().add(0.5, 0.5, 0.5),
-                        TNTData.read(persistentBlockMetadataAPI.get(event.getBlock(), PersistentDataType.BYTE_ARRAY)));
-            }
-            catch(IOException | ClassNotFoundException e)
-            {
-                e.printStackTrace();
-            }
+
+            preSpawn.put(event.getBlock().getLocation().add(0.5, 0.5, 0.5),
+                    TNTData.read(persistentBlockMetadataAPI.get(event.getBlock(), PersistentDataType.STRING)));
         }
         
     }
@@ -114,18 +107,10 @@ public class OkBomber extends JavaPlugin implements Listener
                 event.getBlock().getType() == Material.DISPENSER &&
                 TNTData.hasData(event.getItem()))
         {
-            try
-            {
-                TNTData data = TNTData.read(event.getItem().getItemMeta().getPersistentDataContainer());
-                Directional direction = (Directional) event.getBlock().getBlockData();
-                preSpawn.put(event.getBlock().getLocation().add(0.5, 0.5, 0.5)
-                        .add(direction.getFacing().getDirection()), data);
-    
-            }
-            catch(IOException | ClassNotFoundException e)
-            {
-                e.printStackTrace();
-            }
+            TNTData data = TNTData.read(event.getItem().getItemMeta().getPersistentDataContainer());
+            Directional direction = (Directional) event.getBlock().getBlockData();
+            preSpawn.put(event.getBlock().getLocation().add(0.5, 0.5, 0.5)
+                    .add(direction.getFacing().getDirection()), data);
         }
     }
     
@@ -160,22 +145,15 @@ public class OkBomber extends JavaPlugin implements Listener
     {
         if(event.getBlock().getType() == Material.TNT && TNTData.hasData(event.getItemInHand()))
         {
-            try
+            TNTData data = TNTData.read(event.getItemInHand().getItemMeta().getPersistentDataContainer());
+            for(TNTAddon addon : data.getTntAddons())
             {
-                TNTData data = TNTData.read(event.getItemInHand().getItemMeta().getPersistentDataContainer());
-                for(TNTAddon addon : data.getTntAddons())
-                {
-                    addon.onPlace(event);
-                }
-                
-                if(!event.isCancelled())
-                {
-                    persistentBlockMetadataAPI.set(event.getBlock(), PersistentDataType.BYTE_ARRAY, data.serialize());
-                }
+                addon.onPlace(event);
             }
-            catch(IOException | ClassNotFoundException e)
+            
+            if(!event.isCancelled())
             {
-                e.printStackTrace();
+                persistentBlockMetadataAPI.set(event.getBlock(), PersistentDataType.STRING, data.serialize());
             }
         }
     }
@@ -194,24 +172,17 @@ public class OkBomber extends JavaPlugin implements Listener
                 {
                     if(item != null && TNTData.hasData(item))
                     {
-                        try
+                        // TNT addons can only be common if they exist on the first element
+                        // After that, remove each addon if it isn't on the other elements
+                        TNTData data = TNTData.read(item.getItemMeta().getPersistentDataContainer());
+                        if(first)
                         {
-                            // TNT addons can only be common if they exist on the first element
-                            // After that, remove each addon if it isn't on the other elements
-                            TNTData data = TNTData.read(item.getItemMeta().getPersistentDataContainer());
-                            if(first)
-                            {
-                                common.addAll(data.getTntAddons());
-                                first = false;
-                            }
-                            else
-                            {
-                                common.removeIf(tntAddon -> !data.getTntAddons().contains(tntAddon));
-                            }
+                            common.addAll(data.getTntAddons());
+                            first = false;
                         }
-                        catch(IOException | ClassNotFoundException e)
+                        else
                         {
-                            e.printStackTrace();
+                            common.removeIf(tntAddon -> !data.getTntAddons().contains(tntAddon));
                         }
                     }
                 }
@@ -236,30 +207,23 @@ public class OkBomber extends JavaPlugin implements Listener
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event)
     {
-        if(event.getBlock().getType() == Material.TNT && persistentBlockMetadataAPI.has(event.getBlock(), PersistentDataType.BYTE_ARRAY))
+        if(event.getBlock().getType() == Material.TNT && persistentBlockMetadataAPI.has(event.getBlock(), PersistentDataType.STRING))
         {
-            try
+            TNTData data = TNTData.read(persistentBlockMetadataAPI.get(event.getBlock(), PersistentDataType.STRING));
+            for(TNTAddon addon : data.getTntAddons())
             {
-                TNTData data = TNTData.read(persistentBlockMetadataAPI.get(event.getBlock(), PersistentDataType.BYTE_ARRAY));
-                for(TNTAddon addon : data.getTntAddons())
-                {
-                    addon.onBreak(event);
-                }
-    
-                TNT blockData = (TNT) event.getBlock().getBlockData();
-                if(!event.isCancelled() && event.isDropItems() && !blockData.isUnstable() &&
-                        event.getPlayer().getGameMode() != GameMode.CREATIVE)
-                {
-                    event.setDropItems(false);
-                    ItemStack item = new ItemStack(Material.TNT, 1);
-                    data.applyToItem(item);
-                    event.getBlock().getWorld().dropItemNaturally(
-                            event.getBlock().getLocation().add(0.5, 0.5, 0.5), item);
-                }
+                addon.onBreak(event);
             }
-            catch(IOException | ClassNotFoundException e)
+
+            TNT blockData = (TNT) event.getBlock().getBlockData();
+            if(!event.isCancelled() && event.isDropItems() && !blockData.isUnstable() &&
+                    event.getPlayer().getGameMode() != GameMode.CREATIVE)
             {
-                e.printStackTrace();
+                event.setDropItems(false);
+                ItemStack item = new ItemStack(Material.TNT, 1);
+                data.applyToItem(item);
+                event.getBlock().getWorld().dropItemNaturally(
+                        event.getBlock().getLocation().add(0.5, 0.5, 0.5), item);
             }
         }
     }

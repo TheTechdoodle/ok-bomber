@@ -2,7 +2,6 @@ package com.darkender.plugins.okbomber.custom;
 
 import com.darkender.plugins.okbomber.custom.addons.NoBlockDamageAddon;
 import com.darkender.plugins.okbomber.custom.addons.TrapAddon;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDispenseEvent;
@@ -44,9 +43,14 @@ public abstract class TNTAddon implements Serializable
         addons.put(addon.getKey(), addon);
     }
     
-    public static TNTAddon get(NamespacedKey key)
+    public static TNTAddon get(String key)
     {
         return addons.get(key);
+    }
+    
+    public static boolean has(String key)
+    {
+        return addons.containsKey(key);
     }
 
     public String getKey()
