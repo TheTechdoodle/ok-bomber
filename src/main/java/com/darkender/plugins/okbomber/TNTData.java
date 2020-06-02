@@ -60,7 +60,9 @@ public class TNTData implements Cloneable
         {
             base.addUnsafeEnchantment(Enchantment.ARROW_KNOCKBACK, 1);
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            meta.setDisplayName(ChatColor.AQUA + "Custom TNT");
+            // Show the addon name in the item name if there's only one addon
+            meta.setDisplayName(ChatColor.AQUA +
+                    (tntAddons.size() != 1 ? "Custom TNT" : tntAddons.iterator().next().getName() + " TNT"));
         }
         List<String> lore = new ArrayList<>();
         for(TNTAddon addon : tntAddons)
