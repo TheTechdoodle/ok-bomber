@@ -55,6 +55,7 @@ public class OkBomber extends JavaPlugin implements Listener
         addBasicRecipe(TNTAddon.NO_BLOCK_DAMAGE, Material.FEATHER);
         addBasicRecipe(TNTAddon.INCENDIARY_ADDON, Material.FIRE_CHARGE);
         addBasicRecipe(TNTAddon.STICKY_ADDON, Material.SLIME_BALL);
+        addBasicRecipe(TNTAddon.FLOATING_ADDON, Material.PHANTOM_MEMBRANE);
     }
     
     private void addBasicRecipe(TNTAddon addon, Material center)

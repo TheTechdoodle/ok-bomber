@@ -1,9 +1,6 @@
 package com.darkender.plugins.okbomber.custom;
 
-import com.darkender.plugins.okbomber.custom.addons.IncendiaryAddon;
-import com.darkender.plugins.okbomber.custom.addons.NoBlockDamageAddon;
-import com.darkender.plugins.okbomber.custom.addons.StickyAddon;
-import com.darkender.plugins.okbomber.custom.addons.TrapAddon;
+import com.darkender.plugins.okbomber.custom.addons.*;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDispenseEvent;
@@ -24,6 +21,7 @@ public abstract class TNTAddon
     public final static TNTAddon NO_BLOCK_DAMAGE = new NoBlockDamageAddon();
     public final static TNTAddon INCENDIARY_ADDON = new IncendiaryAddon();
     public final static TNTAddon STICKY_ADDON = new StickyAddon();
+    public final static TNTAddon FLOATING_ADDON = new FloatingAddon();
     
     static
     {
@@ -31,6 +29,7 @@ public abstract class TNTAddon
         addons.put(NO_BLOCK_DAMAGE.getKey(), NO_BLOCK_DAMAGE);
         addons.put(INCENDIARY_ADDON.getKey(), INCENDIARY_ADDON);
         addons.put(STICKY_ADDON.getKey(), STICKY_ADDON);
+        addons.put(FLOATING_ADDON.getKey(), FLOATING_ADDON);
     }
     
     public TNTAddon(@NotNull String key)

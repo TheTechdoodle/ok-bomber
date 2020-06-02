@@ -2,37 +2,36 @@ package com.darkender.plugins.okbomber.custom.addons;
 
 import com.darkender.plugins.okbomber.custom.TNTAddon;
 import org.bukkit.entity.TNTPrimed;
-import org.bukkit.util.Vector;
 
-public class StickyAddon extends TNTAddon
+public class FloatingAddon extends TNTAddon
 {
-    public StickyAddon()
+    public FloatingAddon()
     {
-        super("addon-sticky");
+        super("addon-floating");
     }
     
     @Override
     public boolean conflictsWith(TNTAddon other)
     {
-        return other.equals(FLOATING_ADDON);
+        return other.equals(STICKY_ADDON);
     }
     
     @Override
     public String getName()
     {
-        return "Sticky";
+        return "Floating";
     }
     
     @Override
     public String getDescription()
     {
-        return "Won't move from where it was ignited";
+        return "Causes the TNT to float upwards";
     }
     
     @Override
     public void onIgnite(TNTPrimed tnt)
     {
         tnt.setGravity(false);
-        tnt.setVelocity(new Vector(0, 0, 0));
+        tnt.setVelocity(tnt.getVelocity().setY(1));
     }
 }
