@@ -4,12 +4,8 @@ import com.darkender.plugins.okbomber.custom.TNTAddon;
 import org.bukkit.block.data.type.TNT;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-import java.io.Serializable;
-
-public class TrapAddon extends TNTAddon implements Serializable
+public class TrapAddon extends TNTAddon
 {
-    private static final long serialVersionUID = 9038717973939170146L;
-    
     public TrapAddon()
     {
         super("addon-trap");

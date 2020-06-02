@@ -10,14 +10,12 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class TNTAddon implements Serializable
+public abstract class TNTAddon
 {
     private final static Map<String, TNTAddon> addons = new HashMap<>();
-    private static final long serialVersionUID = 2040291155742538032L;
     private final String key;
     
     public final static TNTAddon TRAP = new TrapAddon();

@@ -38,7 +38,7 @@ public class OkBomber extends JavaPlugin implements Listener
     private HashMap<Location, TNTData> preSpawn;
     public static OkBomber instance;
     private PersistentBlockMetadataAPI persistentBlockMetadataAPI;
-    private Set<NamespacedKey> addedRecipes;
+    private HashMap<NamespacedKey, TNTAddon> addedRecipes;
     
     @Override
     public void onEnable()
@@ -50,7 +50,7 @@ public class OkBomber extends JavaPlugin implements Listener
         preSpawn = new HashMap<>();
         getServer().getPluginManager().registerEvents(this, this);
     
-        addedRecipes = new HashSet<>();
+        addedRecipes = new HashMap<>();
         
         NamespacedKey trapTNTKey = new NamespacedKey(this, "trap-tnt");
         TNTData trapTNTData = new TNTData();
@@ -62,7 +62,7 @@ public class OkBomber extends JavaPlugin implements Listener
         trapTNT.setIngredient('T', Material.TNT);
         trapTNT.setIngredient('H', Material.TRIPWIRE_HOOK);
         Bukkit.addRecipe(trapTNT);
-        addedRecipes.add(trapTNTKey);
+        addedRecipes.put(trapTNTKey, TNTAddon.TRAP);
     
         NamespacedKey noBlockDamageTNTKey = new NamespacedKey(this, "no-block-damage-tnt");
         TNTData noBlockDamageTNTData = new TNTData();
@@ -74,7 +74,7 @@ public class OkBomber extends JavaPlugin implements Listener
         noBlockDamageTNT.setIngredient('T', Material.TNT);
         noBlockDamageTNT.setIngredient('F', Material.FEATHER);
         Bukkit.addRecipe(noBlockDamageTNT);
-        addedRecipes.add(noBlockDamageTNTKey);
+        addedRecipes.put(noBlockDamageTNTKey, TNTAddon.NO_BLOCK_DAMAGE);
     }
     
     @Override
@@ -86,7 +86,7 @@ public class OkBomber extends JavaPlugin implements Listener
             Recipe check = iter.next();
             if(check instanceof ShapedRecipe)
             {
-                if(addedRecipes.contains(((ShapedRecipe) check).getKey()))
+                if(addedRecipes.containsKey(((ShapedRecipe) check).getKey()))
                 {
                     iter.remove();
                 }
@@ -183,41 +183,65 @@ public class OkBomber extends JavaPlugin implements Listener
         if(event.getRecipe() instanceof ShapedRecipe)
         {
             ShapedRecipe recipe = (ShapedRecipe) event.getRecipe();
-            if(recipe.getKey().equals(new NamespacedKey(this, "trap-tnt")))
+            if(addedRecipes.containsKey(recipe.getKey()))
             {
+                TNTAddon recipeAddon = addedRecipes.get(recipe.getKey());
+                
+                // Make a set of addons all other tnt instances have
                 Set<TNTAddon> common = new HashSet<>();
                 boolean first = true;
                 for(ItemStack item : event.getInventory().getMatrix())
                 {
-                    if(item != null && TNTData.hasData(item))
+                    if(item != null)
                     {
-                        // TNT addons can only be common if they exist on the first element
-                        // After that, remove each addon if it isn't on the other elements
-                        TNTData data = TNTData.read(item.getItemMeta().getPersistentDataContainer());
-                        if(first)
+                        if(TNTData.hasData(item))
                         {
-                            common.addAll(data.getTntAddons());
-                            first = false;
+                            // TNT addons can only be common if they exist on the first element
+                            // After that, remove each addon if it isn't on the other elements
+                            TNTData data = TNTData.read(item.getItemMeta().getPersistentDataContainer());
+                            if(first)
+                            {
+                                common.addAll(data.getTntAddons());
+                                first = false;
+                            }
+                            else
+                            {
+                                common.removeIf(tntAddon -> !data.getTntAddons().contains(tntAddon));
+                            }
                         }
-                        else
+                        else if(item.getType() == Material.TNT)
                         {
-                            common.removeIf(tntAddon -> !data.getTntAddons().contains(tntAddon));
+                            common.clear();
+                            break;
                         }
                     }
                 }
                 
-                if(common.contains(TNTAddon.TRAP))
+                if(common.contains(recipeAddon))
                 {
                     event.getInventory().setResult(null);
                 }
                 else
                 {
-                    TNTData data = new TNTData();
-                    data.getTntAddons().addAll(common);
-                    data.getTntAddons().add(TNTAddon.TRAP);
-                    ItemStack item = new ItemStack(Material.TNT, 8);
-                    data.applyToItem(item);
-                    event.getInventory().setResult(item);
+                    boolean conflicts = false;
+                    for(TNTAddon check : common)
+                    {
+                        if(check.conflictsWith(recipeAddon) || recipeAddon.conflictsWith(check))
+                        {
+                            event.getInventory().setResult(null);
+                            conflicts = true;
+                        }
+                    }
+                    
+                    if(!conflicts)
+                    {
+                        TNTData data = new TNTData();
+                        data.getTntAddons().addAll(common);
+                        data.getTntAddons().add(recipeAddon);
+                        ItemStack item = new ItemStack(Material.TNT, 8);
+                        data.applyToItem(item);
+                        event.getInventory().setResult(item);
+                    }
                 }
             }
         }
