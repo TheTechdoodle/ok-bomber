@@ -22,6 +22,7 @@ public abstract class TNTAddon
     public final static TNTAddon INCENDIARY_ADDON = new IncendiaryAddon();
     public final static TNTAddon STICKY_ADDON = new StickyAddon();
     public final static TNTAddon FLOATING_ADDON = new FloatingAddon();
+    public final static TNTAddon SMOKE_BOMB_ADDON = new SmokeBombAddon();
     
     static
     {
@@ -30,6 +31,7 @@ public abstract class TNTAddon
         addons.put(INCENDIARY_ADDON.getKey(), INCENDIARY_ADDON);
         addons.put(STICKY_ADDON.getKey(), STICKY_ADDON);
         addons.put(FLOATING_ADDON.getKey(), FLOATING_ADDON);
+        addons.put(SMOKE_BOMB_ADDON.getKey(), SMOKE_BOMB_ADDON);
     }
     
     public TNTAddon(@NotNull String key)
