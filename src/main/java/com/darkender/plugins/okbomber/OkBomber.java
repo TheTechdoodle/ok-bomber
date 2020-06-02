@@ -51,30 +51,24 @@ public class OkBomber extends JavaPlugin implements Listener
         getServer().getPluginManager().registerEvents(this, this);
     
         addedRecipes = new HashMap<>();
-        
-        NamespacedKey trapTNTKey = new NamespacedKey(this, "trap-tnt");
-        TNTData trapTNTData = new TNTData();
-        trapTNTData.getTntAddons().add(TNTAddon.TRAP);
-        ItemStack trapTNTItem = new ItemStack(Material.TNT, 8);
-        trapTNTData.applyToItem(trapTNTItem);
-        ShapedRecipe trapTNT = new ShapedRecipe(trapTNTKey, trapTNTItem);
-        trapTNT.shape("TTT", "THT", "TTT");
-        trapTNT.setIngredient('T', Material.TNT);
-        trapTNT.setIngredient('H', Material.TRIPWIRE_HOOK);
-        Bukkit.addRecipe(trapTNT);
-        addedRecipes.put(trapTNTKey, TNTAddon.TRAP);
+        addBasicRecipe(TNTAddon.TRAP, Material.TRIPWIRE_HOOK);
+        addBasicRecipe(TNTAddon.NO_BLOCK_DAMAGE, Material.FEATHER);
+        addBasicRecipe(TNTAddon.INCENDIARY_ADDON, Material.FIRE_CHARGE);
+    }
     
-        NamespacedKey noBlockDamageTNTKey = new NamespacedKey(this, "no-block-damage-tnt");
-        TNTData noBlockDamageTNTData = new TNTData();
-        noBlockDamageTNTData.getTntAddons().add(TNTAddon.NO_BLOCK_DAMAGE);
-        ItemStack noBlockDamageTNTItem = new ItemStack(Material.TNT, 8);
-        noBlockDamageTNTData.applyToItem(noBlockDamageTNTItem);
-        ShapedRecipe noBlockDamageTNT = new ShapedRecipe(noBlockDamageTNTKey, noBlockDamageTNTItem);
-        noBlockDamageTNT.shape("TTT", "TFT", "TTT");
-        noBlockDamageTNT.setIngredient('T', Material.TNT);
-        noBlockDamageTNT.setIngredient('F', Material.FEATHER);
-        Bukkit.addRecipe(noBlockDamageTNT);
-        addedRecipes.put(noBlockDamageTNTKey, TNTAddon.NO_BLOCK_DAMAGE);
+    private void addBasicRecipe(TNTAddon addon, Material center)
+    {
+        NamespacedKey tntKey = new NamespacedKey(this, addon.getKey());
+        TNTData tntData = new TNTData();
+        tntData.getTntAddons().add(addon);
+        ItemStack tntItem = new ItemStack(Material.TNT, 8);
+        tntData.applyToItem(tntItem);
+        ShapedRecipe tntRecipe = new ShapedRecipe(tntKey, tntItem);
+        tntRecipe.shape("TTT", "TFT", "TTT");
+        tntRecipe.setIngredient('T', Material.TNT);
+        tntRecipe.setIngredient('F', center);
+        Bukkit.addRecipe(tntRecipe);
+        addedRecipes.put(tntKey, addon);
     }
     
     @Override
