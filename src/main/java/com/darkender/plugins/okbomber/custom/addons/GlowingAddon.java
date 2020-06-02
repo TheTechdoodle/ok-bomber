@@ -3,35 +3,34 @@ package com.darkender.plugins.okbomber.custom.addons;
 import com.darkender.plugins.okbomber.custom.TNTAddon;
 import org.bukkit.entity.TNTPrimed;
 
-public class FloatingAddon extends TNTAddon
+public class GlowingAddon extends TNTAddon
 {
-    public FloatingAddon()
+    public GlowingAddon()
     {
-        super("addon-floating");
+        super("addon-glowing");
     }
     
     @Override
     public boolean conflictsWith(TNTAddon other)
     {
-        return other.equals(STICKY);
+        return false;
     }
     
     @Override
     public String getName()
     {
-        return "Floating";
+        return "Glowing";
     }
     
     @Override
     public String getDescription()
     {
-        return "Causes the TNT to float upwards";
+        return "Causes the TNT to glow when ignited";
     }
     
     @Override
     public void onIgnite(TNTPrimed tnt)
     {
-        tnt.setGravity(false);
-        tnt.setVelocity(tnt.getVelocity().setY(1));
+        tnt.setGlowing(true);
     }
 }

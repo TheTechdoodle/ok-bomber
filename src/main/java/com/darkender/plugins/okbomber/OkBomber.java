@@ -55,10 +55,11 @@ public class OkBomber extends JavaPlugin implements Listener
         addedRecipes = new HashMap<>();
         addBasicRecipe(TNTAddon.TRAP, Material.TRIPWIRE_HOOK);
         addBasicRecipe(TNTAddon.NO_BLOCK_DAMAGE, Material.FEATHER);
-        addBasicRecipe(TNTAddon.INCENDIARY_ADDON, Material.FIRE_CHARGE);
-        addBasicRecipe(TNTAddon.STICKY_ADDON, Material.SLIME_BALL);
-        addBasicRecipe(TNTAddon.FLOATING_ADDON, Material.PHANTOM_MEMBRANE);
-        addBasicRecipe(TNTAddon.SMOKE_BOMB_ADDON, Material.CAMPFIRE);
+        addBasicRecipe(TNTAddon.INCENDIARY, Material.FIRE_CHARGE);
+        addBasicRecipe(TNTAddon.STICKY, Material.SLIME_BALL);
+        addBasicRecipe(TNTAddon.FLOATING, Material.PHANTOM_MEMBRANE);
+        addBasicRecipe(TNTAddon.SMOKE_BOMB, Material.CAMPFIRE);
+        addBasicRecipe(TNTAddon.GLOWING, Material.GLOWSTONE_DUST);
     }
     
     private void addBasicRecipe(TNTAddon addon, Material center)

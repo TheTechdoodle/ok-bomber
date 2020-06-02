@@ -14,7 +14,7 @@ public class StickyAddon extends TNTAddon
     @Override
     public boolean conflictsWith(TNTAddon other)
     {
-        return other.equals(FLOATING_ADDON);
+        return other.equals(FLOATING);
     }
     
     @Override

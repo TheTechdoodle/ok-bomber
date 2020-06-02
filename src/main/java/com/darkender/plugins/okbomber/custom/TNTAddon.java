@@ -19,19 +19,21 @@ public abstract class TNTAddon
     
     public final static TNTAddon TRAP = new TrapAddon();
     public final static TNTAddon NO_BLOCK_DAMAGE = new NoBlockDamageAddon();
-    public final static TNTAddon INCENDIARY_ADDON = new IncendiaryAddon();
-    public final static TNTAddon STICKY_ADDON = new StickyAddon();
-    public final static TNTAddon FLOATING_ADDON = new FloatingAddon();
-    public final static TNTAddon SMOKE_BOMB_ADDON = new SmokeBombAddon();
+    public final static TNTAddon INCENDIARY = new IncendiaryAddon();
+    public final static TNTAddon STICKY = new StickyAddon();
+    public final static TNTAddon FLOATING = new FloatingAddon();
+    public final static TNTAddon SMOKE_BOMB = new SmokeBombAddon();
+    public final static TNTAddon GLOWING = new GlowingAddon();
     
     static
     {
         addons.put(TRAP.getKey(), TRAP);
         addons.put(NO_BLOCK_DAMAGE.getKey(), NO_BLOCK_DAMAGE);
-        addons.put(INCENDIARY_ADDON.getKey(), INCENDIARY_ADDON);
-        addons.put(STICKY_ADDON.getKey(), STICKY_ADDON);
-        addons.put(FLOATING_ADDON.getKey(), FLOATING_ADDON);
-        addons.put(SMOKE_BOMB_ADDON.getKey(), SMOKE_BOMB_ADDON);
+        addons.put(INCENDIARY.getKey(), INCENDIARY);
+        addons.put(STICKY.getKey(), STICKY);
+        addons.put(FLOATING.getKey(), FLOATING);
+        addons.put(SMOKE_BOMB.getKey(), SMOKE_BOMB);
+        addons.put(GLOWING.getKey(), GLOWING);
     }
     
     public TNTAddon(@NotNull String key)

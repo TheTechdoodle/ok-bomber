@@ -20,7 +20,7 @@ public class SmokeBombAddon extends TNTAddon
     @Override
     public boolean conflictsWith(TNTAddon other)
     {
-        return other.equals(NO_BLOCK_DAMAGE) || other.equals(INCENDIARY_ADDON);
+        return other.equals(NO_BLOCK_DAMAGE) || other.equals(INCENDIARY);
     }
     
     @Override
