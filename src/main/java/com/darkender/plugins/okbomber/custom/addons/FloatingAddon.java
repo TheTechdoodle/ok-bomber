@@ -1,5 +1,6 @@
 package com.darkender.plugins.okbomber.custom.addons;
 
+import com.darkender.plugins.okbomber.TNTData;
 import com.darkender.plugins.okbomber.custom.TNTAddon;
 import org.bukkit.entity.TNTPrimed;
 
@@ -29,7 +30,7 @@ public class FloatingAddon extends TNTAddon
     }
     
     @Override
-    public void onIgnite(TNTPrimed tnt)
+    public void onIgnite(TNTPrimed tnt, TNTData data)
     {
         tnt.setGravity(false);
         tnt.setVelocity(tnt.getVelocity().setY(1));

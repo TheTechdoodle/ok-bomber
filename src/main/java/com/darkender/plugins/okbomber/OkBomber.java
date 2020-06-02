@@ -118,7 +118,7 @@ public class OkBomber extends JavaPlugin implements Listener
             TNTData data = TNTData.read(event.getItem().getItemMeta().getPersistentDataContainer());
             for(TNTAddon addon : data.getTntAddons())
             {
-                addon.onDispense(event);
+                addon.onDispense(event, data);
             }
             
             if(!event.isCancelled())
@@ -150,7 +150,7 @@ public class OkBomber extends JavaPlugin implements Listener
                 locationTNTDataEntry.getValue().write(event.getEntity().getPersistentDataContainer());
                 for(TNTAddon addon : locationTNTDataEntry.getValue().getTntAddons())
                 {
-                    addon.onIgnite((TNTPrimed) event.getEntity());
+                    addon.onIgnite((TNTPrimed) event.getEntity(), locationTNTDataEntry.getValue());
                 }
                 return true;
             });
@@ -165,7 +165,7 @@ public class OkBomber extends JavaPlugin implements Listener
             TNTData data = TNTData.read(event.getItemInHand().getItemMeta().getPersistentDataContainer());
             for(TNTAddon addon : data.getTntAddons())
             {
-                addon.onPlace(event);
+                addon.onPlace(event, data);
             }
             
             if(!event.isCancelled())
@@ -255,7 +255,7 @@ public class OkBomber extends JavaPlugin implements Listener
             TNTData data = TNTData.read(persistentBlockMetadataAPI.getContainer(event.getBlock()));
             for(TNTAddon addon : data.getTntAddons())
             {
-                addon.onBreak(event);
+                addon.onBreak(event, data);
             }
 
             TNT blockData = (TNT) event.getBlock().getBlockData();
@@ -289,7 +289,7 @@ public class OkBomber extends JavaPlugin implements Listener
                 TNTData data = TNTData.read(event.getEntity().getPersistentDataContainer());
                 for(TNTAddon addon : data.getTntAddons())
                 {
-                    addon.onExplode(event);
+                    addon.onExplode(event, data);
                 }
             }
         }
@@ -303,7 +303,7 @@ public class OkBomber extends JavaPlugin implements Listener
             TNTData data = TNTData.read(event.getDamager().getPersistentDataContainer());
             for(TNTAddon addon : data.getTntAddons())
             {
-                addon.onDamage(event);
+                addon.onDamage(event, data);
             }
         }
     }
@@ -319,7 +319,7 @@ public class OkBomber extends JavaPlugin implements Listener
                 TNTData data = TNTData.read(soonest.getPersistentDataContainer());
                 for(TNTAddon addon : data.getTntAddons())
                 {
-                    addon.onHangingBreak(event);
+                    addon.onHangingBreak(event, data);
                 }
             }
         }

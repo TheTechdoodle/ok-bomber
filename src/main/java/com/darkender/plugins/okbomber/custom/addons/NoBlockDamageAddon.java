@@ -1,5 +1,6 @@
 package com.darkender.plugins.okbomber.custom.addons;
 
+import com.darkender.plugins.okbomber.TNTData;
 import com.darkender.plugins.okbomber.custom.TNTAddon;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
@@ -29,7 +30,7 @@ public class NoBlockDamageAddon extends TNTAddon
     }
     
     @Override
-    public void onExplode(EntityExplodeEvent event)
+    public void onExplode(EntityExplodeEvent event, TNTData data)
     {
         event.blockList().clear();
     }

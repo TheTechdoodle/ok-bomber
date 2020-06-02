@@ -1,5 +1,6 @@
 package com.darkender.plugins.okbomber.custom.addons;
 
+import com.darkender.plugins.okbomber.TNTData;
 import com.darkender.plugins.okbomber.custom.TNTAddon;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -13,7 +14,7 @@ import java.util.Random;
 
 public class SmokeBombAddon extends TNTAddon
 {
-    private Random random = new Random();
+    private final Random random = new Random();
     
     public SmokeBombAddon()
     {
@@ -39,7 +40,7 @@ public class SmokeBombAddon extends TNTAddon
     }
     
     @Override
-    public void onExplode(EntityExplodeEvent event)
+    public void onExplode(EntityExplodeEvent event, TNTData data)
     {
         event.setCancelled(true);
         event.getLocation().getWorld().playSound(event.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 1.0F, 1.0F);
@@ -54,13 +55,13 @@ public class SmokeBombAddon extends TNTAddon
     }
     
     @Override
-    public void onDamage(EntityDamageByEntityEvent event)
+    public void onDamage(EntityDamageByEntityEvent event, TNTData data)
     {
         event.setCancelled(true);
     }
     
     @Override
-    public void onHangingBreak(HangingBreakEvent event)
+    public void onHangingBreak(HangingBreakEvent event, TNTData data)
     {
         event.setCancelled(true);
     }

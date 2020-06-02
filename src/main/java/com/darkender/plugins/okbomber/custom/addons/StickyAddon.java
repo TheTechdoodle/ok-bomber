@@ -1,5 +1,6 @@
 package com.darkender.plugins.okbomber.custom.addons;
 
+import com.darkender.plugins.okbomber.TNTData;
 import com.darkender.plugins.okbomber.custom.TNTAddon;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.util.Vector;
@@ -30,7 +31,7 @@ public class StickyAddon extends TNTAddon
     }
     
     @Override
-    public void onIgnite(TNTPrimed tnt)
+    public void onIgnite(TNTPrimed tnt, TNTData data)
     {
         tnt.setGravity(false);
         tnt.setVelocity(new Vector(0, 0, 0));

@@ -1,5 +1,6 @@
 package com.darkender.plugins.okbomber.custom;
 
+import com.darkender.plugins.okbomber.TNTData;
 import com.darkender.plugins.okbomber.custom.addons.*;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -87,11 +88,11 @@ public abstract class TNTAddon
     public abstract String getName();
     public abstract String getDescription();
     
-    public void onPlace(BlockPlaceEvent event) {}
-    public void onBreak(BlockBreakEvent event) {}
-    public void onIgnite(TNTPrimed tnt) {}
-    public void onDispense(BlockDispenseEvent event) {}
-    public void onExplode(EntityExplodeEvent event) {}
-    public void onDamage(EntityDamageByEntityEvent event) {}
-    public void onHangingBreak(HangingBreakEvent event) {}
+    public void onPlace(BlockPlaceEvent event, TNTData data) {}
+    public void onBreak(BlockBreakEvent event, TNTData data) {}
+    public void onIgnite(TNTPrimed tnt, TNTData data) {}
+    public void onDispense(BlockDispenseEvent event, TNTData data) {}
+    public void onExplode(EntityExplodeEvent event, TNTData data) {}
+    public void onDamage(EntityDamageByEntityEvent event, TNTData data) {}
+    public void onHangingBreak(HangingBreakEvent event, TNTData data) {}
 }
