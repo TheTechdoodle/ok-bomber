@@ -16,6 +16,8 @@ import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -299,6 +301,17 @@ public class OkBomber extends JavaPlugin implements Listener
             {
                 addon.onDamage(event);
             }
+        }
+    }
+    
+    @EventHandler
+    public void onHangingBreak(HangingBreakByEntityEvent event)
+    {
+        // event.getRemover() seems to be a player, not a primed TNT entity... brilliant
+        // This is like the tnt version of "guns don't kill people, people kill people"
+        if(event.getCause() == HangingBreakEvent.RemoveCause.EXPLOSION)
+        {
+            event.setCancelled(true);
         }
     }
 }

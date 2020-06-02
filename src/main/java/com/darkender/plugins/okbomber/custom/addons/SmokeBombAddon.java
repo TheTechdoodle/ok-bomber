@@ -4,6 +4,7 @@ import com.darkender.plugins.okbomber.custom.TNTAddon;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.util.Vector;
 
@@ -47,5 +48,11 @@ public class SmokeBombAddon extends TNTAddon
                     ThreadLocalRandom.current().nextDouble(-4.0, 4.0)));
             smokePos.getWorld().spawnParticle(Particle.CAMPFIRE_SIGNAL_SMOKE, smokePos, 0);
         }
+    }
+    
+    @Override
+    public void onDamage(EntityDamageByEntityEvent event)
+    {
+        event.setCancelled(true);
     }
 }
