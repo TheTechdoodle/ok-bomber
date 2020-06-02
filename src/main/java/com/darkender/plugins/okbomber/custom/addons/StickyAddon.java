@@ -2,12 +2,13 @@ package com.darkender.plugins.okbomber.custom.addons;
 
 import com.darkender.plugins.okbomber.custom.TNTAddon;
 import org.bukkit.entity.TNTPrimed;
+import org.bukkit.util.Vector;
 
-public class IncendiaryAddon extends TNTAddon
+public class StickyAddon extends TNTAddon
 {
-    public IncendiaryAddon()
+    public StickyAddon()
     {
-        super("addon-incendiary");
+        super("addon-sticky");
     }
     
     @Override
@@ -19,18 +20,19 @@ public class IncendiaryAddon extends TNTAddon
     @Override
     public String getName()
     {
-        return "Incendiary";
+        return "Sticky";
     }
     
     @Override
     public String getDescription()
     {
-        return "Lights nearby blocks on fire";
+        return "Won't move from where it was ignited";
     }
     
     @Override
     public void onIgnite(TNTPrimed tnt)
     {
-        tnt.setIsIncendiary(true);
+        tnt.setGravity(false);
+        tnt.setVelocity(new Vector(0, 0, 0));
     }
 }
