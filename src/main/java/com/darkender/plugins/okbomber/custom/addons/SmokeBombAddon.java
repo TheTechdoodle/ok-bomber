@@ -6,6 +6,7 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.util.Vector;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -52,6 +53,12 @@ public class SmokeBombAddon extends TNTAddon
     
     @Override
     public void onDamage(EntityDamageByEntityEvent event)
+    {
+        event.setCancelled(true);
+    }
+    
+    @Override
+    public void onHangingBreak(HangingBreakEvent event)
     {
         event.setCancelled(true);
     }

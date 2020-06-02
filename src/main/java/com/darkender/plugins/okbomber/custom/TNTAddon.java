@@ -7,6 +7,7 @@ import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.hanging.HangingBreakEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -92,4 +93,5 @@ public abstract class TNTAddon
     public void onDispense(BlockDispenseEvent event) {}
     public void onExplode(EntityExplodeEvent event) {}
     public void onDamage(EntityDamageByEntityEvent event) {}
+    public void onHangingBreak(HangingBreakEvent event) {}
 }

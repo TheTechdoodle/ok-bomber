@@ -16,7 +16,6 @@ import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.ItemStack;
@@ -41,6 +40,7 @@ public class OkBomber extends JavaPlugin implements Listener
     public static OkBomber instance;
     private PersistentBlockMetadataAPI persistentBlockMetadataAPI;
     private HashMap<NamespacedKey, TNTAddon> addedRecipes;
+    private final ImpendingExplosionTracker impendingExplosionTracker = new ImpendingExplosionTracker();
     
     @Override
     public void onEnable()
@@ -106,7 +106,6 @@ public class OkBomber extends JavaPlugin implements Listener
                 persistentBlockMetadataAPI.removeContainer(event.getBlock());
             }
         }
-        
     }
     
     @EventHandler
@@ -136,6 +135,7 @@ public class OkBomber extends JavaPlugin implements Listener
     {
         if(event.getEntityType() == EntityType.PRIMED_TNT)
         {
+            impendingExplosionTracker.addTNT((TNTPrimed) event.getEntity());
             preSpawn.entrySet().removeIf(locationTNTDataEntry ->
             {
                 if(locationTNTDataEntry.getKey().getWorld() != event.getEntity().getWorld())
@@ -282,12 +282,15 @@ public class OkBomber extends JavaPlugin implements Listener
     @EventHandler
     public void onEntityExplode(EntityExplodeEvent event)
     {
-        if(event.getEntityType() == EntityType.PRIMED_TNT && TNTData.hasData(event.getEntity()))
+        if(event.getEntityType() == EntityType.PRIMED_TNT)
         {
-            TNTData data = TNTData.read(event.getEntity().getPersistentDataContainer());
-            for(TNTAddon addon : data.getTntAddons())
+            if(TNTData.hasData(event.getEntity()))
             {
-                addon.onExplode(event);
+                TNTData data = TNTData.read(event.getEntity().getPersistentDataContainer());
+                for(TNTAddon addon : data.getTntAddons())
+                {
+                    addon.onExplode(event);
+                }
             }
         }
     }
@@ -304,15 +307,21 @@ public class OkBomber extends JavaPlugin implements Listener
             }
         }
     }
-    
+
     @EventHandler
-    public void onHangingBreak(HangingBreakByEntityEvent event)
+    public void onHangingBreak(HangingBreakEvent event)
     {
-        // event.getRemover() seems to be a player, not a primed TNT entity... brilliant
-        // This is like the tnt version of "guns don't kill people, people kill people"
         if(event.getCause() == HangingBreakEvent.RemoveCause.EXPLOSION)
         {
-            event.setCancelled(true);
+            TNTPrimed soonest = impendingExplosionTracker.getRightNow(event.getEntity().getLocation());
+            if(soonest != null && TNTData.hasData(soonest))
+            {
+                TNTData data = TNTData.read(soonest.getPersistentDataContainer());
+                for(TNTAddon addon : data.getTntAddons())
+                {
+                    addon.onHangingBreak(event);
+                }
+            }
         }
     }
 }
