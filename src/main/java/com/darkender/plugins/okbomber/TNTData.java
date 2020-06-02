@@ -47,9 +47,9 @@ public class TNTData implements Cloneable
         return joiner.toString();
     }
     
-    public void apply(PersistentDataContainer persistentDataContainer)
+    public void write(PersistentDataContainer container)
     {
-        persistentDataContainer.set(OkBomber.tntDataKey, PersistentDataType.STRING, serialize());
+        container.set(OkBomber.addonsListKey, PersistentDataType.STRING, serialize());
     }
     
     public void applyToItem(ItemStack base)
@@ -67,7 +67,7 @@ public class TNTData implements Cloneable
             lore.add(ChatColor.GOLD + " - " + addon.getName());
         }
         meta.setLore(lore);
-        apply(meta.getPersistentDataContainer());
+        write(meta.getPersistentDataContainer());
         base.setItemMeta(meta);
     }
     
@@ -86,16 +86,16 @@ public class TNTData implements Cloneable
     
     public static TNTData read(PersistentDataContainer persistentDataContainer)
     {
-        if(!persistentDataContainer.has(OkBomber.tntDataKey, PersistentDataType.STRING))
+        if(!persistentDataContainer.has(OkBomber.addonsListKey, PersistentDataType.STRING))
         {
             throw new IllegalArgumentException();
         }
-        return read(persistentDataContainer.get(OkBomber.tntDataKey, PersistentDataType.STRING));
+        return read(persistentDataContainer.get(OkBomber.addonsListKey, PersistentDataType.STRING));
     }
     
     public static boolean hasData(ItemStack item)
     {
         return item.hasItemMeta() && item.getItemMeta().getPersistentDataContainer()
-                .has(OkBomber.tntDataKey, PersistentDataType.STRING);
+                .has(OkBomber.addonsListKey, PersistentDataType.STRING);
     }
 }

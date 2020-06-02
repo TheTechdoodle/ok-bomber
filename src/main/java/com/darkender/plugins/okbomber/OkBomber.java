@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -29,9 +30,12 @@ import java.util.Set;
 
 public class OkBomber extends JavaPlugin implements Listener
 {
+    public static NamespacedKey tntDataKey;
+    public static NamespacedKey addonsListKey;
+    public static NamespacedKey addonsDataKey;
+    
     private HashMap<Location, TNTData> preSpawn;
     public static OkBomber instance;
-    public static NamespacedKey tntDataKey;
     private PersistentBlockMetadataAPI persistentBlockMetadataAPI;
     private Set<NamespacedKey> addedRecipes;
     
@@ -40,6 +44,7 @@ public class OkBomber extends JavaPlugin implements Listener
     {
         instance = this;
         tntDataKey = new NamespacedKey(this, "data");
+        addonsListKey = new NamespacedKey(this, "addons");
         persistentBlockMetadataAPI = new PersistentBlockMetadataAPI(this);
         preSpawn = new HashMap<>();
         getServer().getPluginManager().registerEvents(this, this);
@@ -93,9 +98,12 @@ public class OkBomber extends JavaPlugin implements Listener
     {
         if(persistentBlockMetadataAPI.has(event.getBlock(), PersistentDataType.TAG_CONTAINER))
         {
-
-            preSpawn.put(event.getBlock().getLocation().add(0.5, 0.5, 0.5),
-                    TNTData.read(persistentBlockMetadataAPI.get(event.getBlock(), PersistentDataType.STRING)));
+            if(!event.isCancelled())
+            {
+                preSpawn.put(event.getBlock().getLocation().add(0.5, 0.5, 0.5),
+                        TNTData.read(persistentBlockMetadataAPI.getContainer(event.getBlock())));
+                persistentBlockMetadataAPI.removeContainer(event.getBlock());
+            }
         }
         
     }
@@ -119,6 +127,7 @@ public class OkBomber extends JavaPlugin implements Listener
     {
         if(event.getEntityType() == EntityType.PRIMED_TNT)
         {
+            Bukkit.broadcastMessage("New tnt!");
             preSpawn.entrySet().removeIf(locationTNTDataEntry ->
             {
                 if(locationTNTDataEntry.getKey().getWorld() != event.getEntity().getWorld())
@@ -153,7 +162,9 @@ public class OkBomber extends JavaPlugin implements Listener
             
             if(!event.isCancelled())
             {
-                persistentBlockMetadataAPI.set(event.getBlock(), PersistentDataType.STRING, data.serialize());
+                PersistentDataContainer container = persistentBlockMetadataAPI.getContainer(event.getBlock());
+                data.write(container);
+                persistentBlockMetadataAPI.setContainer(event.getBlock(), container);
             }
         }
     }
@@ -207,15 +218,23 @@ public class OkBomber extends JavaPlugin implements Listener
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event)
     {
-        if(event.getBlock().getType() == Material.TNT && persistentBlockMetadataAPI.has(event.getBlock(), PersistentDataType.STRING))
+        if(event.getBlock().getType() == Material.TNT && persistentBlockMetadataAPI.has(event.getBlock(), PersistentDataType.TAG_CONTAINER))
         {
-            TNTData data = TNTData.read(persistentBlockMetadataAPI.get(event.getBlock(), PersistentDataType.STRING));
+            TNTData data = TNTData.read(persistentBlockMetadataAPI.getContainer(event.getBlock()));
             for(TNTAddon addon : data.getTntAddons())
             {
                 addon.onBreak(event);
             }
 
             TNT blockData = (TNT) event.getBlock().getBlockData();
+            if(!event.isCancelled())
+            {
+                persistentBlockMetadataAPI.removeContainer(event.getBlock());
+                if(blockData.isUnstable())
+                {
+                    preSpawn.put(event.getBlock().getLocation().add(0.5, 0.5, 0.5), data);
+                }
+            }
             if(!event.isCancelled() && event.isDropItems() && !blockData.isUnstable() &&
                     event.getPlayer().getGameMode() != GameMode.CREATIVE)
             {

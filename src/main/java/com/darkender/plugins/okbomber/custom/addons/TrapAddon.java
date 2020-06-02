@@ -39,6 +39,5 @@ public class TrapAddon extends TNTAddon implements Serializable
         TNT data = (TNT) event.getBlock().getBlockData();
         data.setUnstable(true);
         event.getBlock().setBlockData(data);
-        event.getPlayer().sendMessage("Trap addon triggered");
     }
 }
