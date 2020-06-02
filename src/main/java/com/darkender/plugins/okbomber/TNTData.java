@@ -3,6 +3,7 @@ package com.darkender.plugins.okbomber;
 import com.darkender.plugins.okbomber.custom.TNTAddon;
 import org.bukkit.ChatColor;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -93,9 +94,18 @@ public class TNTData implements Cloneable
         return read(persistentDataContainer.get(OkBomber.addonsListKey, PersistentDataType.STRING));
     }
     
+    public static boolean hasData(PersistentDataContainer container)
+    {
+        return container.has(OkBomber.addonsListKey, PersistentDataType.STRING);
+    }
+    
+    public static boolean hasData(Entity entity)
+    {
+        return hasData(entity.getPersistentDataContainer());
+    }
+    
     public static boolean hasData(ItemStack item)
     {
-        return item.hasItemMeta() && item.getItemMeta().getPersistentDataContainer()
-                .has(OkBomber.addonsListKey, PersistentDataType.STRING);
+        return item.hasItemMeta() && hasData(item.getItemMeta().getPersistentDataContainer());
     }
 }

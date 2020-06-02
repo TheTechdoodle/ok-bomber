@@ -8,17 +8,18 @@ import org.bukkit.*;
 import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.type.TNT;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Firework;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -116,9 +117,17 @@ public class OkBomber extends JavaPlugin implements Listener
                 TNTData.hasData(event.getItem()))
         {
             TNTData data = TNTData.read(event.getItem().getItemMeta().getPersistentDataContainer());
-            Directional direction = (Directional) event.getBlock().getBlockData();
-            preSpawn.put(event.getBlock().getLocation().add(0.5, 0.5, 0.5)
-                    .add(direction.getFacing().getDirection()), data);
+            for(TNTAddon addon : data.getTntAddons())
+            {
+                addon.onDispense(event);
+            }
+            
+            if(!event.isCancelled())
+            {
+                Directional direction = (Directional) event.getBlock().getBlockData();
+                preSpawn.put(event.getBlock().getLocation().add(0.5, 0.5, 0.5)
+                        .add(direction.getFacing().getDirection()), data);
+            }
         }
     }
     
@@ -127,7 +136,6 @@ public class OkBomber extends JavaPlugin implements Listener
     {
         if(event.getEntityType() == EntityType.PRIMED_TNT)
         {
-            Bukkit.broadcastMessage("New tnt!");
             preSpawn.entrySet().removeIf(locationTNTDataEntry ->
             {
                 if(locationTNTDataEntry.getKey().getWorld() != event.getEntity().getWorld())
@@ -138,12 +146,12 @@ public class OkBomber extends JavaPlugin implements Listener
                 {
                     return false;
                 }
-    
-                Firework fw = event.getEntity().getWorld().spawn(event.getEntity().getLocation(), Firework.class);
-                FireworkMeta meta = fw.getFireworkMeta();
-                meta.addEffect(FireworkEffect.builder().withColor(Color.RED).withFlicker().withTrail().build());
-                fw.setFireworkMeta(meta);
                 
+                locationTNTDataEntry.getValue().write(event.getEntity().getPersistentDataContainer());
+                for(TNTAddon addon : locationTNTDataEntry.getValue().getTntAddons())
+                {
+                    addon.onIgnite((TNTPrimed) event.getEntity());
+                }
                 return true;
             });
         }
@@ -243,6 +251,32 @@ public class OkBomber extends JavaPlugin implements Listener
                 data.applyToItem(item);
                 event.getBlock().getWorld().dropItemNaturally(
                         event.getBlock().getLocation().add(0.5, 0.5, 0.5), item);
+            }
+        }
+    }
+    
+    @EventHandler
+    public void onEntityExplode(EntityExplodeEvent event)
+    {
+        if(event.getEntityType() == EntityType.PRIMED_TNT && TNTData.hasData(event.getEntity()))
+        {
+            TNTData data = TNTData.read(event.getEntity().getPersistentDataContainer());
+            for(TNTAddon addon : data.getTntAddons())
+            {
+                addon.onExplode(event);
+            }
+        }
+    }
+    
+    @EventHandler
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event)
+    {
+        if(event.getDamager() instanceof TNTPrimed && TNTData.hasData(event.getDamager()))
+        {
+            TNTData data = TNTData.read(event.getDamager().getPersistentDataContainer());
+            for(TNTAddon addon : data.getTntAddons())
+            {
+                addon.onDamage(event);
             }
         }
     }
