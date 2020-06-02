@@ -9,10 +9,12 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.util.Vector;
 
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Random;
 
 public class SmokeBombAddon extends TNTAddon
 {
+    private Random random = new Random();
+    
     public SmokeBombAddon()
     {
         super("addon-smoke-bomb");
@@ -44,9 +46,9 @@ public class SmokeBombAddon extends TNTAddon
         for(int i = 0; i < 1000; i++)
         {
             Location smokePos = event.getLocation().clone().add(new Vector(
-                    ThreadLocalRandom.current().nextDouble(-4.0, 4.0),
-                    ThreadLocalRandom.current().nextDouble(0.0, 4.0),
-                    ThreadLocalRandom.current().nextDouble(-4.0, 4.0)));
+                    (random.nextDouble() * 8.0) - 4.0,
+                    (random.nextDouble() * 4.0) - 1.0,
+                    (random.nextDouble() * 8.0) - 4.0));
             smokePos.getWorld().spawnParticle(Particle.CAMPFIRE_SIGNAL_SMOKE, smokePos, 0);
         }
     }
