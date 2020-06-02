@@ -40,16 +40,12 @@ public class TrapAddon extends TNTAddon
     @Override
     public void onBreak(BlockBreakEvent event, TNTData data)
     {
-        if(event.isCancelled())
-        {
-            return;
-        }
-        
         // Clean up after previous method
         TNT blockData = (TNT) event.getBlock().getBlockData();
         if(blockData.isUnstable())
         {
             blockData.setUnstable(false);
+            event.getBlock().setBlockData(blockData);
         }
         
         if(event.getPlayer().getGameMode() == GameMode.CREATIVE)

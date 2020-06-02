@@ -273,8 +273,7 @@ public class OkBomber extends JavaPlugin implements Listener
                 event.setDropItems(false);
                 ItemStack item = new ItemStack(Material.TNT, 1);
                 data.applyToItem(item);
-                event.getBlock().getWorld().dropItemNaturally(
-                        event.getBlock().getLocation().add(0.5, 0.5, 0.5), item);
+                event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), item);
             }
         }
     }
