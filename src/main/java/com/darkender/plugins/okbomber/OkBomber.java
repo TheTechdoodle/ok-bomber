@@ -6,7 +6,6 @@ import com.destroystokyo.paper.event.block.TNTPrimeEvent;
 import com.destroystokyo.paper.event.entity.EntityAddToWorldEvent;
 import org.bukkit.*;
 import org.bukkit.block.data.Directional;
-import org.bukkit.block.data.type.TNT;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.EventHandler;
@@ -257,18 +256,14 @@ public class OkBomber extends JavaPlugin implements Listener
             {
                 addon.onBreak(event, data);
             }
-
-            TNT blockData = (TNT) event.getBlock().getBlockData();
-            if(!event.isCancelled())
+            
+            // If the block is removed either by not cancelling the event or by changing the type, remove associated metadata
+            if(!event.isCancelled() || event.getBlock().getType() != Material.TNT)
             {
                 persistentBlockMetadataAPI.removeContainer(event.getBlock());
-                if(blockData.isUnstable())
-                {
-                    preSpawn.put(event.getBlock().getLocation().add(0.5, 0.5, 0.5), data);
-                }
             }
-            if(!event.isCancelled() && event.isDropItems() && !blockData.isUnstable() &&
-                    event.getPlayer().getGameMode() != GameMode.CREATIVE)
+            
+            if(!event.isCancelled() && event.isDropItems() && event.getPlayer().getGameMode() != GameMode.CREATIVE)
             {
                 event.setDropItems(false);
                 ItemStack item = new ItemStack(Material.TNT, 1);
