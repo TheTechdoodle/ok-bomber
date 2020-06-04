@@ -24,10 +24,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 public class OkBomber extends JavaPlugin implements Listener
 {
@@ -40,6 +37,7 @@ public class OkBomber extends JavaPlugin implements Listener
     private PersistentBlockMetadataAPI persistentBlockMetadataAPI;
     private HashMap<NamespacedKey, TNTAddon> addedRecipes;
     private final ImpendingExplosionTracker impendingExplosionTracker = new ImpendingExplosionTracker();
+    private HashMap<TNTPrimed, TNTData> activeEntities;
     
     @Override
     public void onEnable()
@@ -49,6 +47,7 @@ public class OkBomber extends JavaPlugin implements Listener
         addonsListKey = new NamespacedKey(this, "addons");
         persistentBlockMetadataAPI = new PersistentBlockMetadataAPI(this);
         preSpawn = new HashMap<>();
+        activeEntities = new HashMap<>();
         getServer().getPluginManager().registerEvents(this, this);
     
         addedRecipes = new HashMap<>();
@@ -59,6 +58,29 @@ public class OkBomber extends JavaPlugin implements Listener
         addBasicRecipe(TNTAddon.FLOATING, Material.PHANTOM_MEMBRANE);
         addBasicRecipe(TNTAddon.SMOKE_BOMB, Material.CAMPFIRE);
         addBasicRecipe(TNTAddon.GLOWING, Material.GLOWSTONE_DUST);
+        
+        getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                Iterator<Map.Entry<TNTPrimed, TNTData>> iter = activeEntities.entrySet().iterator();
+                while(iter.hasNext())
+                {
+                    Map.Entry<TNTPrimed, TNTData> entry = iter.next();
+                    if(!entry.getKey().isValid())
+                    {
+                        iter.remove();
+                        continue;
+                    }
+                    
+                    for(TNTAddon addon : entry.getValue().getTntAddons())
+                    {
+                        addon.entityTick(entry.getKey(), entry.getValue());
+                    }
+                }
+            }
+        }, 1L, 1L);
     }
     
     private void addBasicRecipe(TNTAddon addon, Material center)
@@ -156,6 +178,7 @@ public class OkBomber extends JavaPlugin implements Listener
                 {
                     addon.onIgnite((TNTPrimed) event.getEntity(), locationTNTDataEntry.getValue());
                 }
+                activeEntities.put((TNTPrimed) event.getEntity(), locationTNTDataEntry.getValue());
                 return true;
             });
         }

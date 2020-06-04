@@ -95,4 +95,5 @@ public abstract class TNTAddon
     public void onExplode(EntityExplodeEvent event, TNTData data) {}
     public void onDamage(EntityDamageByEntityEvent event, TNTData data) {}
     public void onHangingBreak(HangingBreakEvent event, TNTData data) {}
+    public void entityTick(TNTPrimed entity, TNTData data) {}
 }
