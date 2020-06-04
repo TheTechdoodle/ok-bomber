@@ -1,5 +1,6 @@
 package com.darkender.plugins.okbomber.custom.addons;
 
+import com.darkender.plugins.okbomber.OkBomber;
 import com.darkender.plugins.okbomber.TNTData;
 import com.darkender.plugins.okbomber.custom.TNTAddon;
 import org.bukkit.GameMode;
@@ -59,8 +60,8 @@ public class TrapAddon extends TNTAddon
             event.setDropItems(false);
             event.getBlock().setType(Material.AIR);
             Location spawnPos = event.getBlock().getLocation().add(0.5, 0.0, 0.5);
-            TNTPrimed tnt = spawnPos.getWorld().spawn(spawnPos, TNTPrimed.class);
-            data.write(tnt.getPersistentDataContainer());
+            OkBomber.addToPrespawn(spawnPos, data);
+            spawnPos.getWorld().spawn(spawnPos, TNTPrimed.class);
             spawnPos.getWorld().playSound(spawnPos, Sound.ENTITY_TNT_PRIMED, 1.0f, 1.0f);
         }
     }

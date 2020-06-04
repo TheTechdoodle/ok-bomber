@@ -35,7 +35,7 @@ public class OkBomber extends JavaPlugin implements Listener
     public static NamespacedKey addonsListKey;
     public static NamespacedKey addonsDataKey;
     
-    private HashMap<Location, TNTData> preSpawn;
+    private static HashMap<Location, TNTData> preSpawn;
     public static OkBomber instance;
     private PersistentBlockMetadataAPI persistentBlockMetadataAPI;
     private HashMap<NamespacedKey, TNTAddon> addedRecipes;
@@ -74,6 +74,11 @@ public class OkBomber extends JavaPlugin implements Listener
         tntRecipe.setIngredient('F', center);
         Bukkit.addRecipe(tntRecipe);
         addedRecipes.put(tntKey, addon);
+    }
+    
+    public static void addToPrespawn(Location location, TNTData data)
+    {
+        preSpawn.put(location, data);
     }
     
     @Override
