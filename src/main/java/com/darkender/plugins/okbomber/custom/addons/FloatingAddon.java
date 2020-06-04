@@ -33,6 +33,11 @@ public class FloatingAddon extends TNTAddon
     public void onIgnite(TNTPrimed tnt, TNTData data)
     {
         tnt.setGravity(false);
-        tnt.setVelocity(tnt.getVelocity().setY(1));
+    }
+    
+    @Override
+    public void entityTick(TNTPrimed tnt, TNTData data)
+    {
+        tnt.setVelocity(tnt.getVelocity().setY(0.4));
     }
 }
