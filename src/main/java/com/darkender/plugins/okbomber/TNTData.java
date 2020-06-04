@@ -62,12 +62,15 @@ public class TNTData implements Cloneable
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             // Show the addon name in the item name if there's only one addon
             meta.setDisplayName(ChatColor.AQUA +
-                    (tntAddons.size() != 1 ? "Custom TNT" : tntAddons.iterator().next().getName() + " TNT"));
+                    (tntAddons.size() != 1 ?
+                            "Custom TNT " + ChatColor.BLUE + "[" + tntAddons.size() + " Addons]" :
+                            tntAddons.iterator().next().getName() + " TNT"));
         }
         List<String> lore = new ArrayList<>();
         for(TNTAddon addon : tntAddons)
         {
-            lore.add(ChatColor.GOLD + " - " + addon.getName());
+            lore.add(ChatColor.GOLD + "\u2022 " + addon.getName());
+            lore.add(ChatColor.DARK_AQUA + "    " + addon.getDescription());
         }
         meta.setLore(lore);
         write(meta.getPersistentDataContainer());
