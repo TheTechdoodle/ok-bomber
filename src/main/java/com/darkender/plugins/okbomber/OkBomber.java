@@ -5,6 +5,7 @@ import com.darkender.plugins.persistentblockmetadataapi.PersistentBlockMetadataA
 import com.destroystokyo.paper.event.block.TNTPrimeEvent;
 import com.destroystokyo.paper.event.entity.EntityAddToWorldEvent;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.TNTPrimed;
@@ -17,6 +18,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
@@ -38,6 +41,7 @@ public class OkBomber extends JavaPlugin implements Listener
     private HashMap<NamespacedKey, TNTAddon> addedRecipes;
     private final ImpendingExplosionTracker impendingExplosionTracker = new ImpendingExplosionTracker();
     private HashMap<TNTPrimed, TNTData> activeEntities;
+    private HashMap<Block, TNTData> activeBlocks;
     
     @Override
     public void onEnable()
@@ -48,6 +52,7 @@ public class OkBomber extends JavaPlugin implements Listener
         persistentBlockMetadataAPI = new PersistentBlockMetadataAPI(this);
         preSpawn = new HashMap<>();
         activeEntities = new HashMap<>();
+        activeBlocks = new HashMap<>();
         getServer().getPluginManager().registerEvents(this, this);
     
         addedRecipes = new HashMap<>();
@@ -58,6 +63,14 @@ public class OkBomber extends JavaPlugin implements Listener
         addBasicRecipe(TNTAddon.FLOATING, Material.PHANTOM_MEMBRANE);
         addBasicRecipe(TNTAddon.SMOKE_BOMB, Material.CAMPFIRE);
         addBasicRecipe(TNTAddon.GLOWING, Material.GLOWSTONE_DUST);
+        
+        for(World world : getServer().getWorlds())
+        {
+            for(Chunk chunk : world.getLoadedChunks())
+            {
+                checkChunk(chunk);
+            }
+        }
         
         getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
         {
@@ -77,6 +90,14 @@ public class OkBomber extends JavaPlugin implements Listener
                     for(TNTAddon addon : entry.getValue().getTntAddons())
                     {
                         addon.entityTick(entry.getKey(), entry.getValue());
+                    }
+                }
+                
+                for(Map.Entry<Block, TNTData> activeBlock : activeBlocks.entrySet())
+                {
+                    for(TNTAddon addon : activeBlock.getValue().getTntAddons())
+                    {
+                        addon.blockTick(activeBlock.getKey(), activeBlock.getValue());
                     }
                 }
             }
@@ -130,6 +151,7 @@ public class OkBomber extends JavaPlugin implements Listener
                 preSpawn.put(event.getBlock().getLocation().add(0.5, 0.5, 0.5),
                         TNTData.read(persistentBlockMetadataAPI.getContainer(event.getBlock())));
                 persistentBlockMetadataAPI.removeContainer(event.getBlock());
+                activeBlocks.remove(event.getBlock());
             }
         }
     }
@@ -200,6 +222,7 @@ public class OkBomber extends JavaPlugin implements Listener
                 PersistentDataContainer container = persistentBlockMetadataAPI.getContainer(event.getBlock());
                 data.write(container);
                 persistentBlockMetadataAPI.setContainer(event.getBlock(), container);
+                activeBlocks.put(event.getBlock(), data);
             }
         }
     }
@@ -257,6 +280,7 @@ public class OkBomber extends JavaPlugin implements Listener
                         {
                             event.getInventory().setResult(null);
                             conflicts = true;
+                            break; // Exit on first conflict
                         }
                     }
                     
@@ -289,6 +313,7 @@ public class OkBomber extends JavaPlugin implements Listener
             if(!event.isCancelled() || event.getBlock().getType() != Material.TNT)
             {
                 persistentBlockMetadataAPI.removeContainer(event.getBlock());
+                activeBlocks.remove(event.getBlock());
             }
             
             if(!event.isCancelled() && event.isDropItems() && event.getPlayer().getGameMode() != GameMode.CREATIVE)
@@ -345,5 +370,29 @@ public class OkBomber extends JavaPlugin implements Listener
                 }
             }
         }
+    }
+    
+    private void checkChunk(Chunk chunk)
+    {
+        Set<Block> locations = persistentBlockMetadataAPI.getMetadataLocations(chunk);
+        if(locations != null)
+        {
+            for(Block block : locations)
+            {
+                activeBlocks.put(block, TNTData.read(persistentBlockMetadataAPI.getContainer(block)));
+            }
+        }
+    }
+    
+    @EventHandler(ignoreCancelled = true)
+    public void onChunkLoad(ChunkLoadEvent event)
+    {
+        checkChunk(event.getChunk());
+    }
+    
+    @EventHandler(ignoreCancelled = true)
+    public void onChunkUnload(ChunkUnloadEvent event)
+    {
+        activeBlocks.entrySet().removeIf(blockTNTDataEntry -> blockTNTDataEntry.getKey().getChunk() == event.getChunk());
     }
 }

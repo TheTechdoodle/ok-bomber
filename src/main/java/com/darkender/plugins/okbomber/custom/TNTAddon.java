@@ -2,6 +2,7 @@ package com.darkender.plugins.okbomber.custom;
 
 import com.darkender.plugins.okbomber.TNTData;
 import com.darkender.plugins.okbomber.custom.addons.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDispenseEvent;
@@ -96,4 +97,5 @@ public abstract class TNTAddon
     public void onDamage(EntityDamageByEntityEvent event, TNTData data) {}
     public void onHangingBreak(HangingBreakEvent event, TNTData data) {}
     public void entityTick(TNTPrimed tnt, TNTData data) {}
+    public void blockTick(Block tnt, TNTData data) {}
 }
