@@ -3,6 +3,7 @@ package com.darkender.plugins.okbomber.custom.addons;
 import com.darkender.plugins.okbomber.TNTData;
 import com.darkender.plugins.okbomber.custom.TNTAddon;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.hanging.HangingBreakEvent;
 
 public class NoBlockDamageAddon extends TNTAddon
 {
@@ -33,5 +34,11 @@ public class NoBlockDamageAddon extends TNTAddon
     public void onExplode(EntityExplodeEvent event, TNTData data)
     {
         event.blockList().clear();
+    }
+    
+    @Override
+    public void onHangingBreak(HangingBreakEvent event, TNTData data)
+    {
+        event.setCancelled(true);
     }
 }
