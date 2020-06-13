@@ -1,7 +1,9 @@
 package com.darkender.plugins.okbomber;
 
 import com.darkender.plugins.okbomber.custom.TNTAddon;
+import com.darkender.plugins.persistentblockmetadataapi.MetadataWorldTrackObserver;
 import com.darkender.plugins.persistentblockmetadataapi.PersistentBlockMetadataAPI;
+import com.darkender.plugins.persistentblockmetadataapi.WorldTrackingModule;
 import com.destroystokyo.paper.event.block.TNTPrimeEvent;
 import com.destroystokyo.paper.event.entity.EntityAddToWorldEvent;
 import org.bukkit.*;
@@ -24,7 +26,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
@@ -63,6 +64,23 @@ public class OkBomber extends JavaPlugin implements Listener
         addBasicRecipe(TNTAddon.FLOATING, Material.PHANTOM_MEMBRANE);
         addBasicRecipe(TNTAddon.SMOKE_BOMB, Material.CAMPFIRE);
         addBasicRecipe(TNTAddon.GLOWING, Material.GLOWSTONE_DUST);
+    
+        WorldTrackingModule worldTrackingModule = new WorldTrackingModule(this, persistentBlockMetadataAPI);
+        worldTrackingModule.setMetadataWorldTrackObserver(new MetadataWorldTrackObserver()
+        {
+            @Override
+            public void onBreak(Block block)
+            {
+                activeBlocks.remove(block);
+            }
+    
+            @Override
+            public void onMove(Block from, Block to)
+            {
+                activeBlocks.put(to, activeBlocks.get(from));
+                activeBlocks.remove(from);
+            }
+        });
         
         for(World world : getServer().getWorlds())
         {
@@ -72,33 +90,29 @@ public class OkBomber extends JavaPlugin implements Listener
             }
         }
         
-        getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
+        getServer().getScheduler().scheduleSyncRepeatingTask(this, () ->
         {
-            @Override
-            public void run()
+            Iterator<Map.Entry<TNTPrimed, TNTData>> iter = activeEntities.entrySet().iterator();
+            while(iter.hasNext())
             {
-                Iterator<Map.Entry<TNTPrimed, TNTData>> iter = activeEntities.entrySet().iterator();
-                while(iter.hasNext())
+                Map.Entry<TNTPrimed, TNTData> entry = iter.next();
+                if(!entry.getKey().isValid())
                 {
-                    Map.Entry<TNTPrimed, TNTData> entry = iter.next();
-                    if(!entry.getKey().isValid())
-                    {
-                        iter.remove();
-                        continue;
-                    }
-                    
-                    for(TNTAddon addon : entry.getValue().getTntAddons())
-                    {
-                        addon.entityTick(entry.getKey(), entry.getValue());
-                    }
+                    iter.remove();
+                    continue;
                 }
                 
-                for(Map.Entry<Block, TNTData> activeBlock : activeBlocks.entrySet())
+                for(TNTAddon addon : entry.getValue().getTntAddons())
                 {
-                    for(TNTAddon addon : activeBlock.getValue().getTntAddons())
-                    {
-                        addon.blockTick(activeBlock.getKey(), activeBlock.getValue());
-                    }
+                    addon.entityTick(entry.getKey(), entry.getValue());
+                }
+            }
+            
+            for(Map.Entry<Block, TNTData> activeBlock : activeBlocks.entrySet())
+            {
+                for(TNTAddon addon : activeBlock.getValue().getTntAddons())
+                {
+                    addon.blockTick(activeBlock.getKey(), activeBlock.getValue());
                 }
             }
         }, 1L, 1L);
@@ -144,13 +158,13 @@ public class OkBomber extends JavaPlugin implements Listener
     @EventHandler
     public void onTNTPrime(TNTPrimeEvent event)
     {
-        if(persistentBlockMetadataAPI.has(event.getBlock(), PersistentDataType.TAG_CONTAINER))
+        if(persistentBlockMetadataAPI.has(event.getBlock()))
         {
             if(!event.isCancelled())
             {
                 preSpawn.put(event.getBlock().getLocation().add(0.5, 0.5, 0.5),
-                        TNTData.read(persistentBlockMetadataAPI.getContainer(event.getBlock())));
-                persistentBlockMetadataAPI.removeContainer(event.getBlock());
+                        TNTData.read(persistentBlockMetadataAPI.get(event.getBlock())));
+                persistentBlockMetadataAPI.remove(event.getBlock());
                 activeBlocks.remove(event.getBlock());
             }
         }
@@ -219,9 +233,9 @@ public class OkBomber extends JavaPlugin implements Listener
             
             if(!event.isCancelled())
             {
-                PersistentDataContainer container = persistentBlockMetadataAPI.getContainer(event.getBlock());
+                PersistentDataContainer container = persistentBlockMetadataAPI.get(event.getBlock());
                 data.write(container);
-                persistentBlockMetadataAPI.setContainer(event.getBlock(), container);
+                persistentBlockMetadataAPI.set(event.getBlock(), container);
                 activeBlocks.put(event.getBlock(), data);
             }
         }
@@ -301,9 +315,9 @@ public class OkBomber extends JavaPlugin implements Listener
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event)
     {
-        if(event.getBlock().getType() == Material.TNT && persistentBlockMetadataAPI.has(event.getBlock(), PersistentDataType.TAG_CONTAINER))
+        if(event.getBlock().getType() == Material.TNT && persistentBlockMetadataAPI.has(event.getBlock()))
         {
-            TNTData data = TNTData.read(persistentBlockMetadataAPI.getContainer(event.getBlock()));
+            TNTData data = TNTData.read(persistentBlockMetadataAPI.get(event.getBlock()));
             for(TNTAddon addon : data.getTntAddons())
             {
                 addon.onBreak(event, data);
@@ -312,7 +326,7 @@ public class OkBomber extends JavaPlugin implements Listener
             // If the block is removed either by not cancelling the event or by changing the type, remove associated metadata
             if(!event.isCancelled() || event.getBlock().getType() != Material.TNT)
             {
-                persistentBlockMetadataAPI.removeContainer(event.getBlock());
+                persistentBlockMetadataAPI.remove(event.getBlock());
                 activeBlocks.remove(event.getBlock());
             }
             
@@ -337,6 +351,21 @@ public class OkBomber extends JavaPlugin implements Listener
                 for(TNTAddon addon : data.getTntAddons())
                 {
                     addon.onExplode(event, data);
+                }
+            }
+        }
+        
+        // Done outside of TNTPrimeEvent because this is called before and the WorldTrackingModule removes the data
+        if(!event.isCancelled())
+        {
+            for(Block block : event.blockList())
+            {
+                if(block.getType() == Material.TNT && persistentBlockMetadataAPI.has(block))
+                {
+                    preSpawn.put(block.getLocation().add(0.5, 0.5, 0.5),
+                            TNTData.read(persistentBlockMetadataAPI.get(block)));
+                    persistentBlockMetadataAPI.remove(block);
+                    activeBlocks.remove(block);
                 }
             }
         }
@@ -379,7 +408,7 @@ public class OkBomber extends JavaPlugin implements Listener
         {
             for(Block block : locations)
             {
-                activeBlocks.put(block, TNTData.read(persistentBlockMetadataAPI.getContainer(block)));
+                activeBlocks.put(block, TNTData.read(persistentBlockMetadataAPI.get(block)));
             }
         }
     }

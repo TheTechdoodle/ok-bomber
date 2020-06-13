@@ -58,7 +58,7 @@ public class TNTData implements Cloneable
         ItemMeta meta = base.getItemMeta();
         if(!hasData(base))
         {
-            base.addUnsafeEnchantment(Enchantment.ARROW_KNOCKBACK, 1);
+            meta.addEnchant(Enchantment.ARROW_KNOCKBACK, 1, true);
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             // Show the addon name in the item name if there's only one addon
             meta.setDisplayName(ChatColor.AQUA +
