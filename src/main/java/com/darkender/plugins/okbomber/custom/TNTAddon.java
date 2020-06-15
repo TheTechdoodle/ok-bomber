@@ -27,6 +27,7 @@ public abstract class TNTAddon
     public final static TNTAddon FLOATING = new FloatingAddon();
     public final static TNTAddon SMOKE_BOMB = new SmokeBombAddon();
     public final static TNTAddon GLOWING = new GlowingAddon();
+    public final static TNTAddon INSTANT = new InstantAddon();
     
     static
     {
@@ -37,6 +38,7 @@ public abstract class TNTAddon
         addons.put(FLOATING.getKey(), FLOATING);
         addons.put(SMOKE_BOMB.getKey(), SMOKE_BOMB);
         addons.put(GLOWING.getKey(), GLOWING);
+        addons.put(INSTANT.getKey(), INSTANT);
     }
     
     public TNTAddon(@NotNull String key)

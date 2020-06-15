@@ -64,6 +64,7 @@ public class OkBomber extends JavaPlugin implements Listener
         addBasicRecipe(TNTAddon.FLOATING, Material.PHANTOM_MEMBRANE);
         addBasicRecipe(TNTAddon.SMOKE_BOMB, Material.CAMPFIRE);
         addBasicRecipe(TNTAddon.GLOWING, Material.GLOWSTONE_DUST);
+        addBasicRecipe(TNTAddon.INSTANT, Material.REDSTONE_TORCH);
     
         WorldTrackingModule worldTrackingModule = new WorldTrackingModule(this, persistentBlockMetadataAPI);
         worldTrackingModule.setMetadataWorldTrackObserver(new MetadataWorldTrackObserver()
