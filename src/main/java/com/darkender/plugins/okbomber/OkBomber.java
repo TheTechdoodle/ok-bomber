@@ -16,6 +16,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
@@ -369,6 +370,18 @@ public class OkBomber extends JavaPlugin implements Listener
                     activeBlocks.remove(block);
                 }
             }
+        }
+    }
+    
+    @EventHandler(ignoreCancelled = true)
+    public void onEntityChangeBlock(EntityChangeBlockEvent event)
+    {
+        if(persistentBlockMetadataAPI.has(event.getBlock()) && event.getEntityType() == EntityType.ARROW)
+        {
+            preSpawn.put(event.getBlock().getLocation().add(0.5, 0.5, 0.5),
+                    TNTData.read(persistentBlockMetadataAPI.get(event.getBlock())));
+            persistentBlockMetadataAPI.remove(event.getBlock());
+            activeBlocks.remove(event.getBlock());
         }
     }
     
