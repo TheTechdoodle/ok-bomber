@@ -2,6 +2,7 @@ package com.darkender.plugins.okbomber.custom.addons;
 
 import com.darkender.plugins.okbomber.TNTData;
 import com.darkender.plugins.okbomber.custom.TNTAddon;
+import org.bukkit.Particle;
 import org.bukkit.entity.TNTPrimed;
 
 public class FloatingAddon extends TNTAddon
@@ -38,6 +39,7 @@ public class FloatingAddon extends TNTAddon
     @Override
     public void entityTick(TNTPrimed tnt, TNTData data)
     {
+        tnt.getWorld().spawnParticle(Particle.CLOUD, tnt.getLocation(), 0);
         tnt.setVelocity(tnt.getVelocity().setY(0.4));
     }
 }
