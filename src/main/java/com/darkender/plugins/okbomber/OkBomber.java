@@ -195,6 +195,7 @@ public class OkBomber extends JavaPlugin implements Listener
             activeBlocks.remove(block);
             block.setType(Material.AIR);
             spawnLoc.getWorld().spawn(spawnLoc, TNTPrimed.class);
+            spawnLoc.getWorld().playSound(spawnLoc, Sound.ENTITY_TNT_PRIMED, 1.0f, 1.0f);
         }
     }
     
