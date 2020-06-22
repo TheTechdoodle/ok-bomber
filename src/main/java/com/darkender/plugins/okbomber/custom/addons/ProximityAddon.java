@@ -5,6 +5,7 @@ import com.darkender.plugins.okbomber.TNTData;
 import com.darkender.plugins.okbomber.custom.TNTAddon;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.util.BoundingBox;
 
@@ -30,7 +31,7 @@ public class ProximityAddon extends TNTAddon
     @Override
     public String getDescription()
     {
-        return "Ignites when approached";
+        return "Ignites when approached by a player";
     }
     
     @Override
@@ -45,10 +46,16 @@ public class ProximityAddon extends TNTAddon
         BoundingBox box = BoundingBox.of(tnt.getLocation(), 5.0, 5.0, 5.0);
         for(Entity entity : tnt.getWorld().getNearbyEntities(box))
         {
+            if(entity.getType() != EntityType.PLAYER)
+            {
+                continue;
+            }
+            
             if(!data.getTntData().containsKey("proximity-crafter") ||
                     !entity.getUniqueId().equals(data.getTntData().get("proximity-crafter")))
             {
                 OkBomber.instance.ignite(tnt);
+                break;
             }
         }
     }
