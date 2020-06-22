@@ -10,6 +10,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -91,6 +92,7 @@ public abstract class TNTAddon
     public abstract String getName();
     public abstract String getDescription();
     
+    public void onPrepareCraft(PrepareItemCraftEvent event, TNTData data) {}
     public void onPlace(BlockPlaceEvent event, TNTData data) {}
     public void onBreak(BlockBreakEvent event, TNTData data) {}
     public void onIgnite(TNTPrimed tnt, TNTData data) {}

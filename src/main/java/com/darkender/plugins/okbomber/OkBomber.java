@@ -184,6 +184,19 @@ public class OkBomber extends JavaPlugin implements Listener
         }
     }
     
+    public void ignite(Block block)
+    {
+        if(persistentBlockMetadataAPI.has(block))
+        {
+            Location spawnLoc = block.getLocation().add(0.5, 0.5, 0.5);
+            preSpawn.put(spawnLoc, TNTData.read(persistentBlockMetadataAPI.get(block)));
+            persistentBlockMetadataAPI.remove(block);
+            activeBlocks.remove(block);
+            block.setType(Material.AIR);
+            spawnLoc.getWorld().spawn(spawnLoc, TNTPrimed.class);
+        }
+    }
+    
     @EventHandler
     public void onBlockDispense(BlockDispenseEvent event)
     {
@@ -317,6 +330,12 @@ public class OkBomber extends JavaPlugin implements Listener
                         TNTData data = new TNTData();
                         data.getTntAddons().addAll(common);
                         data.getTntAddons().add(recipeAddon);
+                        
+                        for(TNTAddon addon : data.getTntAddons())
+                        {
+                            addon.onPrepareCraft(event, data);
+                        }
+                        
                         ItemStack item = new ItemStack(Material.TNT, 8);
                         data.applyToItem(item);
                         event.getInventory().setResult(item);
