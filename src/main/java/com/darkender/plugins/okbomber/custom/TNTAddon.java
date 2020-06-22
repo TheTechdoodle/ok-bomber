@@ -29,6 +29,7 @@ public abstract class TNTAddon
     public final static TNTAddon SMOKE_BOMB = new SmokeBombAddon();
     public final static TNTAddon GLOWING = new GlowingAddon();
     public final static TNTAddon INSTANT = new InstantAddon();
+    public final static TNTAddon PROXIMITY = new ProximityAddon();
     
     static
     {
@@ -40,6 +41,7 @@ public abstract class TNTAddon
         addons.put(SMOKE_BOMB.getKey(), SMOKE_BOMB);
         addons.put(GLOWING.getKey(), GLOWING);
         addons.put(INSTANT.getKey(), INSTANT);
+        addons.put(PROXIMITY.getKey(), PROXIMITY);
     }
     
     public TNTAddon(@NotNull String key)
