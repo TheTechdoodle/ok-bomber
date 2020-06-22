@@ -1,6 +1,7 @@
 package com.darkender.plugins.okbomber;
 
 import com.darkender.plugins.okbomber.custom.TNTAddon;
+import com.darkender.plugins.persistentblockmetadataapi.LoadUnloadTypeChecker;
 import com.darkender.plugins.persistentblockmetadataapi.MetadataWorldTrackObserver;
 import com.darkender.plugins.persistentblockmetadataapi.PersistentBlockMetadataAPI;
 import com.darkender.plugins.persistentblockmetadataapi.WorldTrackingModule;
@@ -11,6 +12,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.TNTPrimed;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -72,16 +74,25 @@ public class OkBomber extends JavaPlugin implements Listener
         worldTrackingModule.setMetadataWorldTrackObserver(new MetadataWorldTrackObserver()
         {
             @Override
-            public void onBreak(Block block)
+            public void onBreak(Block block, Event event)
             {
                 activeBlocks.remove(block);
             }
     
             @Override
-            public void onMove(Block from, Block to)
+            public void onMove(Block from, Block to, Event event)
             {
                 activeBlocks.put(to, activeBlocks.get(from));
                 activeBlocks.remove(from);
+            }
+        });
+        
+        persistentBlockMetadataAPI.setLoadUnloadTypeChecker(new LoadUnloadTypeChecker()
+        {
+            @Override
+            public boolean shouldRemove(Block block, PersistentDataContainer persistentDataContainer)
+            {
+                return block.getType() != Material.TNT;
             }
         });
         
