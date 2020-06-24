@@ -30,6 +30,7 @@ public abstract class TNTAddon
     public final static TNTAddon GLOWING = new GlowingAddon();
     public final static TNTAddon INSTANT = new InstantAddon();
     public final static TNTAddon PROXIMITY = new ProximityAddon();
+    public final static TNTAddon DUD = new DudAddon();
     
     static
     {
@@ -42,6 +43,7 @@ public abstract class TNTAddon
         addons.put(GLOWING.getKey(), GLOWING);
         addons.put(INSTANT.getKey(), INSTANT);
         addons.put(PROXIMITY.getKey(), PROXIMITY);
+        addons.put(DUD.getKey(), DUD);
     }
     
     public TNTAddon(@NotNull String key)
