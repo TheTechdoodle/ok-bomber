@@ -38,7 +38,6 @@ public class OkBomber extends JavaPlugin implements Listener
 {
     public static NamespacedKey tntDataKey;
     public static NamespacedKey addonsListKey;
-    public static NamespacedKey addonsDataKey;
     
     private static HashMap<Location, TNTData> preSpawn;
     public static OkBomber instance;
@@ -200,6 +199,14 @@ public class OkBomber extends JavaPlugin implements Listener
         }
     }
     
+    public void addBlock(Block block, TNTData data)
+    {
+        PersistentDataContainer container = persistentBlockMetadataAPI.get(block);
+        data.write(container);
+        persistentBlockMetadataAPI.set(block, container);
+        activeBlocks.put(block, data);
+    }
+    
     @EventHandler
     public void onBlockDispense(BlockDispenseEvent event)
     {
@@ -213,7 +220,7 @@ public class OkBomber extends JavaPlugin implements Listener
                 addon.onDispense(event, data);
             }
             
-            if(!event.isCancelled())
+            if(!event.isCancelled() && event.getItem().getAmount() > 0)
             {
                 Directional direction = (Directional) event.getBlock().getBlockData();
                 preSpawn.put(event.getBlock().getLocation().add(0.5, 0.5, 0.5)
