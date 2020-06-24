@@ -70,9 +70,9 @@ public class DudAddon extends TNTAddon
             return;
         }
         
-        block.setType(Material.TNT);
         OkBomber.instance.addBlock(block, data);
         block.getWorld().playSound(block.getLocation(), Sound.BLOCK_GRASS_PLACE, 1.0f, 1.0f);
+        block.setType(Material.TNT);
     
         // You can probably dupe dud tnt
         Bukkit.getScheduler().runTaskLater(OkBomber.instance, () ->
