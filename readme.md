@@ -5,33 +5,33 @@ Addons can be added to TNT by crafting 8 TNT around the addon item.
 If the 8 TNT all share any addons, the addons will be merged.
 
 List of addons:
- - ####Smoke Bomb
+ - Smoke Bomb\
    Item: campfire or soul campfire\
    TNT will create a cloud of smoke instead of damaging blocks and entities
- - ####Trap
+ - Trap\
    Item: tripwire hook\
    This TNT will ignite instantly when mined. It can be mined safely with silk touch or shears
- - ####Instant
+ - Instant\
    Item: redstone torch\
    TNT will explode instantly with no fuse
- - ####Floating
+ - Floating\
    Item: phantom membrane\
    When ignited, TNT will float upwards at a constant pace
- - ####Dud
+ - Dud\
    Item: water bucket\
    When ignited, the TNT will drop as an item. It can also be placed by dispensers instead of ignited by dispensers
- - ####Proximity
+ - Proximity\
    Item: ender eye\
    Any player within a 5 block area of the TNT block will ignite it. The player who crafted the TNT is ignored
- - ####Glowing
+ - Glowing\
    Item: glowstone dust\
    The TNT entity will glow which allows it to be seen through walls
- - ####Incendiary
+ - Incendiary\
    Item: fire charge\
    Upon exploding, the TNT will produce fire along with breaking blocks. Similar to a ghast fireball
- - ####Sticky
+ - Sticky\
    Item: slime ball\
    The TNT entity will stay in place instead of falling downwards
- - ####No Block Damage
+ - No Block Damage\
    Item: feather\
    The TNT won't damage blocks but will still damage mobs
