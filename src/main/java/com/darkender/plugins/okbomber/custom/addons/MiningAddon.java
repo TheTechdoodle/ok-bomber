@@ -18,6 +18,20 @@ public class MiningAddon extends TNTAddon
             Material.ANDESITE, Material.GRAVEL, Material.SAND, Material.NETHERRACK, Material.MAGMA_BLOCK
     ));
     
+    static
+    {
+        // Add 1.16 blocks
+        try
+        {
+            shouldDestroy.add(Material.valueOf("BASALT"));
+            shouldDestroy.add(Material.valueOf("BLACKSTONE"));
+            shouldDestroy.add(Material.valueOf("BASALT"));
+            shouldDestroy.add(Material.valueOf("CRIMSON_NYLIUM"));
+            shouldDestroy.add(Material.valueOf("WARPED_NYLIUM"));
+        }
+        catch(Exception ignored) {}
+    }
+    
     public MiningAddon()
     {
         super("addon-mining");
@@ -38,7 +52,7 @@ public class MiningAddon extends TNTAddon
     @Override
     public String getDescription()
     {
-        return "Destroys only common blocks";
+        return "Only Destroys common blocks and doesn't damage entities";
     }
     
     @Override
