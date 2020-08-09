@@ -52,7 +52,7 @@ public class MiningAddon extends TNTAddon
     @Override
     public String getDescription()
     {
-        return "Only Destroys common blocks and doesn't damage entities";
+        return "Only Destroys common underground blocks and doesn't damage entities";
     }
     
     @Override

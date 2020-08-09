@@ -31,6 +31,7 @@ public abstract class TNTAddon
     public final static TNTAddon INSTANT = new InstantAddon();
     public final static TNTAddon PROXIMITY = new ProximityAddon();
     public final static TNTAddon DUD = new DudAddon();
+    public final static TNTAddon MINING = new MiningAddon();
     
     static
     {
@@ -44,6 +45,7 @@ public abstract class TNTAddon
         addons.put(INSTANT.getKey(), INSTANT);
         addons.put(PROXIMITY.getKey(), PROXIMITY);
         addons.put(DUD.getKey(), DUD);
+        addons.put(MINING.getKey(), MINING);
     }
     
     public TNTAddon(@NotNull String key)

@@ -19,3 +19,4 @@ Glowing | glowstone dust | The TNT entity will glow which allows it to be seen t
 Incendiary | fire charge | Upon exploding, the TNT will produce fire along with breaking blocks. Similar to a ghast fireball
 Sticky | slime ball | The TNT entity will stay in place instead of falling downwards
 No Block Damage | feather | The TNT won't damage blocks but will still damage mobs
+Mining | iron ingot | Only Destroys common underground blocks and doesn't damage entities
